@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+
+{% block main %}
+    <div class="text-center mb-5">
+        <h1>Find Your First Contribution</h1>
+        <p class="lead">Search for beginner-friendly issues on GitHub</p>
+    </div>
+
+    <form action="/" method="post" class="row g-3 justify-content-center mb-5">
+        <div class="col-auto">
+            <input type="text" class="form-control" name="language" placeholder="e.g. Python, Java, HTML" value="{{ search_term }}">
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary mb-3">Search Issues</button>
+        </div>
+    </form>
+
+    {% if results %}
+        <div class="list-group w-75 mx-auto">
+            {% for issue in results %}
+                <a href="{{ issue.url }}" target="_blank" class="list-group-item list-group-item-action" aria-current="true">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1 text-primary">{{ issue.title }}</h5>
+                        <small>Go to GitHub &rarr;</small>
+                    </div>
+                    <p class="mb-1 text-muted">Click to view details on GitHub.</p>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        {% if search_term %}
+            <div class="alert alert-warning text-center" role="alert">
+                No issues found for "{{ search_term }}". Try a different language!
+            </div>
+        {% endif %}
+    {% endif %}
+
+{% endblock %}
