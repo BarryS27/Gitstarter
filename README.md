@@ -1,7 +1,7 @@
 # Gitstarter
 #### Video Demo:  <https://youtu.be/-E6hMQy048A>
 
-![Python](https://img.shields.io/badge/Python-3.x-blue?style=flat&logo=python)
+![Python](https://img.shields.io/badge/Python-3.13-blue?style=flat&logo=python)
 ![Flask](https://img.shields.io/badge/Flask-Web%20Framework-green?style=flat&logo=flask)
 ![Bootstrap](https://img.shields.io/badge/Bootstrap-5.0-purple?style=flat&logo=bootstrap)
 
