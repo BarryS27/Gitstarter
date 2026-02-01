@@ -6,33 +6,51 @@
         <p class="lead">Search for beginner-friendly issues on GitHub</p>
     </div>
 
-    <form action="/" method="post" class="row g-3 justify-content-center mb-5">
+    <div class="row g-3 justify-content-center mb-5">
         <div class="col-auto">
-            <input type="text" class="form-control" name="language" placeholder="e.g. Python, Java, HTML" value="{{ search_term }}">
+            <input type="text" id="language-input" class="form-control" placeholder="e.g. Python, JS">
         </div>
         <div class="col-auto">
-            <button type="submit" class="btn btn-primary mb-3">Search Issues</button>
+            <button id="search-btn" class="btn btn-primary">Search Issues</button>
         </div>
-    </form>
+    </div>
 
-    {% if results %}
-        <div class="list-group w-75 mx-auto">
-            {% for issue in results %}
-                <a href="{{ issue.url }}" target="_blank" class="list-group-item list-group-item-action" aria-current="true">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h5 class="mb-1 text-primary">{{ issue.title }}</h5>
-                        <small>Go to GitHub &rarr;</small>
-                    </div>
-                    <p class="mb-1 text-muted">Click to view details on GitHub.</p>
-                </a>
-            {% endfor %}
-        </div>
-    {% else %}
-        {% if search_term %}
-            <div class="alert alert-warning text-center" role="alert">
-                No issues found for "{{ search_term }}". Try a different language!
-            </div>
-        {% endif %}
-    {% endif %}
+    <div id="results-container" class="list-group w-100 w-md-75 mx-auto"></div>
 
+    <script>
+        document.getElementById('search-btn').addEventListener('click', async () => {
+            const lang = document.getElementById('language-input').value;
+            const container = document.getElementById('results-container');
+            
+            if (!lang) return alert('Please enter a language!');
+            
+            container.innerHTML = '<div class="text-center">🔍 Searching...</div>';
+
+            try {
+                const query = `label:"good first issue" language:${lang} state:open`;
+                const url = `https://api.github.com/search/issues?q=${encodeURIComponent(query)}&sort=created&order=desc`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.items && data.items.length > 0) {
+                    container.innerHTML = data.items.map(issue => `
+                        <a href="${issue.html_url}" target="_blank" class="list-group-item list-group-item-action p-3 mb-2 shadow-sm border rounded">
+                            <div class="d-flex w-100 justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="mb-1 text-primary">${issue.title}</h5>
+                                    <p class="mb-0 text-muted small">${issue.repository_url.split('/').slice(-2).join('/')}</p>
+                                </div>
+                                <span class="badge bg-success rounded-pill">Good First Issue</span>
+                            </div>
+                        </a>
+                    `).join('');
+                } else {
+                    container.innerHTML = `<div class="alert alert-warning">No issues found for "${lang}".</div>`;
+                }
+            } catch (error) {
+                container.innerHTML = `<div class="alert alert-danger">Error fetching data. Check your connection.</div>`;
+            }
+        });
+    </script>
 {% endblock %}

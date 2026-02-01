@@ -1,15 +1,13 @@
-from flask import Flask, render_template, request
-from helpers import search_issues
+from flask import Flask, render_template
+from flask_frozen import Freezer
 
 app = Flask(__name__)
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/")
 def index():
-    if request.method == "POST":
-        lang = request.form.get("language")
-        if not lang:
-            return "Please enter the language you want."
-        issues = search_issues(lang)
-        return render_template("index.html", results=issues, search_term=lang)
-    else:
-        return render_template("index.html", results=[])
+    return render_template("index.html", results=[], search_term="")
+
+freezer = Freezer(app)
+
+if __name__ == "__main__":
+    freezer.freeze()
