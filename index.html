@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Good First Issue Finder</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <nav class="navbar navbar-dark bg-dark">
+            <div class="container-fluid">
+                <span class="navbar-brand mb-0 h1">GitStarter</span>
+            </div>
+        </nav>
+
+        <main class="container mt-5">
+            
+    <div class="text-center mb-5">
+        <h1>Find Your First Contribution</h1>
+        <p class="lead">Search for beginner-friendly issues on GitHub</p>
+    </div>
+
+    <div class="row g-3 justify-content-center mb-5">
+        <div class="col-auto">
+            <input type="text" id="language-input" class="form-control" placeholder="e.g. Python, JS">
+        </div>
+        <div class="col-auto">
+            <button id="search-btn" class="btn btn-primary">Search Issues</button>
+        </div>
+    </div>
+
+    <div id="results-container" class="list-group w-100 w-md-75 mx-auto"></div>
+
+    <script>
+        document.getElementById('search-btn').addEventListener('click', async () => {
+            const lang = document.getElementById('language-input').value;
+            const container = document.getElementById('results-container');
+            
+            if (!lang) return alert('Please enter a language!');
+            
+            container.innerHTML = '<div class="text-center">🔍 Searching...</div>';
+
+            try {
+                const query = `label:"good first issue" language:${lang} state:open`;
+                const url = `https://api.github.com/search/issues?q=${encodeURIComponent(query)}&sort=created&order=desc`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.items && data.items.length > 0) {
+                    container.innerHTML = data.items.map(issue => `
+                        <a href="${issue.html_url}" target="_blank" class="list-group-item list-group-item-action p-3 mb-2 shadow-sm border rounded">
+                            <div class="d-flex w-100 justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="mb-1 text-primary">${issue.title}</h5>
+                                    <p class="mb-0 text-muted small">${issue.repository_url.split('/').slice(-2).join('/')}</p>
+                                </div>
+                                <span class="badge bg-success rounded-pill">Good First Issue</span>
+                            </div>
+                        </a>
+                    `).join('');
+                } else {
+                    container.innerHTML = `<div class="alert alert-warning">No issues found for "${lang}".</div>`;
+                }
+            } catch (error) {
+                container.innerHTML = `<div class="alert alert-danger">Error fetching data. Check your connection.</div>`;
+            }
+        });
+    </script>
+
+        </main>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>
